@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Attendance</title>
+  <link rel="stylesheet" href="attendance.css">
+</head>
+<body>
+  <header>
+    <div class="logo">📋 A.M.S</div>
+    
+    <div class="login-info"><strong>Student</strong></div>
+  </header>
+
+  <main>
+    <div class="form-section">
+      <input type="text" id="search" placeholder="Search by name..." onkeyup="searchTable()" />
+    </div>
+
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Student</th>
+          <th>Roll No</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Populated via JS -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    function loadAttendance() {
+        const attendance = localStorage.getItem("attendance");
+      
+        // Check if null or an empty array
+        if (!attendance || JSON.parse(attendance).length === 0) {
+          document.getElementById("tableBody").innerHTML = `
+            <tr><td colspan="5" style="text-align:center; color:gray;">No attendance data available.</td></tr>
+          `;
+          return;
+        }
+      
+        const data = JSON.parse(attendance);
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+      
+        data.forEach((entry, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${entry.student}</td>
+            <td>${entry.event}</td>
+            <td>${entry.date}</td>
+            <td style="color: ${entry.status === 'Present' ? 'green' : entry.status === 'Absent' ? 'red' : 'black'};">
+              ${entry.status || '-'}
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+      
+
+    function searchTable() {
+      const filter = document.getElementById("search").value.toUpperCase();
+      const trs = document.getElementById("attendanceTable").getElementsByTagName("tr");
+
+      for (let i = 1; i < trs.length; i++) {
+        const td = trs[i].getElementsByTagName("td")[1];
+        if (td) {
+          trs[i].style.display = td.innerText.toUpperCase().includes(filter) ? "" : "none";
+        }
+      }
+    }
+
+    window.onload = loadAttendance;
+  </script>
+</body>
+</html>

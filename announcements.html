@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Event Cards</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .card {
+        width: 300px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        background-color: #fff;
+      }
+
+      .card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 2px solid #0d6efd;
+      }
+
+      .card-body {
+        padding: 15px;
+      }
+
+      .card-body h5 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .card-body p {
+        font-size: 0.9rem;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="text-center my-5 display-4 fw-bold">Upcoming College Events</h1>
+
+      <div class="card-container" id="eventCards"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const events = JSON.parse(localStorage.getItem('events')) || [];
+
+      function updateEventCards() {
+        const eventCards = document.getElementById('eventCards');
+        eventCards.innerHTML = '';
+
+        events.forEach((event) => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+
+          card.innerHTML = `
+            <img src="${event.img}" alt="Event Image">
+            <div class="card-body">
+              <h5>${event.name}</h5>
+              <p><strong>Date:</strong> ${event.date}</p>
+              <p><strong>Venue:</strong> ${event.venue}</p>
+              <p><strong>Category:</strong> ${event.category}</p>
+              <p><strong>Fee:</strong> ₹${event.registrationfee}</p>
+              <p><strong>Description:</strong> ${event.description}</p>
+            </div>
+          `;
+
+          eventCards.appendChild(card);
+        });
+      }
+
+      window.onload = updateEventCards;
+    </script>
+  </body>
+</html>

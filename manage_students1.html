@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Events Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+    }
+
+    .navbar {
+      background-color: #343a40;
+      padding: 1rem 2rem;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    .page-header {
+      padding: 2rem;
+      text-align: center;
+      background: linear-gradient(to right, #007BFF, #00C6FF);
+      color: white;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .content {
+      padding: 2rem;
+      flex: 1;
+    }
+
+    .search-bar {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .search-input {
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 250px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: #007BFF;
+      color: white;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+      transition: background 0.3s ease;
+    }
+
+    .no-data {
+      padding: 2rem;
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      color: #856404;
+      margin-top: 2rem;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    footer {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      th, td {
+        font-size: 0.9rem;
+        padding: 0.7rem;
+      }
+
+      .page-header {
+        font-size: 1.5rem;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <h1>Events Tracker</h1>
+  </div>
+
+  <div class="page-header">
+    My Registered Events
+  </div>
+
+  <div class="content">
+    <div class="search-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search by Name, Email, Event..." onkeyup="filterRegistrations()">
+    </div>
+    <div id="registrationList"></div>
+  </div>
+
+  <footer>
+    <p class="mb-0">© 2025 Event Management System | SRM College</p>
+  </footer>
+
+  <script>
+    function loadRegistrations() {
+      const data = JSON.parse(localStorage.getItem('registrations')) || [];
+      const container = document.getElementById('registrationList');
+
+      if (data.length === 0) {
+        container.innerHTML = "<div class='no-data'>No registrations found.</div>";
+        return;
+      }
+
+      let html = `<table>
+        <thead>
+          <tr>
+            <th>Name</th><th>Email</th><th>Phone</th><th>Roll No</th><th>Event</th>
+            <th>Department</th><th>Year</th><th>Section</th><th>Reg Date&Time</th>
+          </tr>
+        </thead><tbody>`;
+
+      data.forEach(entry => {
+        html += `<tr>
+          <td>${entry.name}</td>
+          <td>${entry.email}</td>
+          <td>${entry.phone}</td>
+          <td>${entry.roll}</td>
+          <td>${entry.event || "Cultural Fest"}</td>
+          <td>${entry.department}</td>
+          <td>${entry.year}</td>
+          <td>${entry.section}</td>
+          <td>${entry.timestamp}</td>
+        </tr>`;
+      });
+
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+
+    function filterRegistrations() {
+      const searchValue = document.getElementById('searchInput').value.toLowerCase();
+      const data = JSON.parse(localStorage.getItem('registrations')) || [];
+      const filteredData = data.filter(entry => 
+        entry.name.toLowerCase().includes(searchValue) ||
+        entry.email.toLowerCase().includes(searchValue) ||
+        (entry.event || "Cultural Fest").toLowerCase().includes(searchValue)
+      );
+      
+      const container = document.getElementById('registrationList');
+      if (filteredData.length === 0) {
+        container.innerHTML = "<div class='no-data'>No matching registrations found.</div>";
+        return;
+      }
+
+      let html = `<table>
+        <thead>
+          <tr>
+            <th>Name</th><th>Email</th><th>Phone</th><th>Roll No</th><th>Event</th>
+            <th>Department</th><th>Year</th><th>Section</th><th>Reg Date&Time</th>
+          </tr>
+        </thead><tbody>`;
+
+      filteredData.forEach(entry => {
+        html += `<tr>
+          <td>${entry.name}</td>
+          <td>${entry.email}</td>
+          <td>${entry.phone}</td>
+          <td>${entry.roll}</td>
+          <td>${entry.event || "Cultural Fest"}</td>
+          <td>${entry.department}</td>
+          <td>${entry.year}</td>
+          <td>${entry.section}</td>
+          <td>${entry.timestamp}</td>
+        </tr>`;
+      });
+
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+
+    window.onload = loadRegistrations;
+  </script>
+
+</body>
+</html>

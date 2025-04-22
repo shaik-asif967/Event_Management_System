@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Store Login & Signup</title>
+    <link rel="stylesheet" href="registration.css">
+    <script defer src="reg.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+
+    <section class="reg">
+        <div class="container">
+            <div class="event-card">
+                <div class="event-image">
+                    <img src="img/culture.avif" alt="Cultural Fest" style="background-image: url('https://via.placeholder.com/400/300/87CEEB'); background-size: cover; background-position: center;">
+                    <div class="event-tag">Cultural</div>
+                </div>
+                <div class="event-details">
+                    <h2 class="event-title">Cultural Fest</h2>
+                    <p class="event-description">A celebration of diversity through music, dance, and art performances</p>
+                    
+                    <div class="event-info">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>March 20, 2025 • 11:30 AM</span>
+                    </div>
+                    
+                    <div class="event-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>College Ground</span>
+                    </div>
+                    
+                    <div class="event-info">
+                        <i class="fas fa-users"></i>
+                        <span>320/500 Registered</span>
+                    </div>
+                    
+                    <div class="event-info">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Registration Fee: ₹200</span>
+                    </div>
+                    
+                    <div class="event-organizer">
+                        <div class="organizer-title">Organized by:</div>
+                        <div class="organizer-name">Cultural Committee</div>
+                        <div class="organizer-email">cultural@vidyalankar.edu</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="registration-form">
+                <h2 class="form-title">Registration Form</h2>
+                
+                <form id="registrationForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Full Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Email Address</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Roll Number / ID</label>
+                            <input type="text" class="form-control" id="roll" required>
+                        </div>
+                        <div class="form-group">
+                          <label class="required">Event Name</label>
+                          <input type="text" class="form-control" id="event" required>
+                      </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="required">Department</label>
+                            <select class="form-control" id="department" required>
+                                <option selected disabled>Select Department</option>
+                                <option>Computer Science Engineering</option>
+                                <option>Information Technology</option>
+                                <option>Electronics and Communication Engineering</option>
+                                <option>Mechanical Engineering</option>
+                                <option>Civil Engineering</option>
+                                <option>Aeronautical Engineering</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="required">Year of Study</label>
+                            <select class="form-control" id="year" required>
+                                <option selected disabled>Select Year</option>
+                                <option>First Year</option>
+                                <option>Second Year</option>
+                                <option>Third Year</option>
+                                <option>Final Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                          <label class="required">Section</label>
+                          <select class="form-control" id="section" required>
+                              <option selected disabled>Select Section</option>
+                              <option>A</option>
+                              <option>B</option>
+                              <option>C</option>
+                              <option>D</option>
+                          </select>
+                      </div>
+                    </div>
+                    
+                    
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms">I agree to the event terms and conditions</label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Complete Registration</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+
+        
+    <script>
+      document.getElementById('registrationForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+      
+        const registrationData = {
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          phone: document.getElementById('phone').value,
+          roll: document.getElementById('roll').value,
+          event: document.getElementById('event').value,
+          department: document.getElementById('department').value,
+          year: document.getElementById('year').value,
+          section: document.getElementById('section').value,
+          timestamp: new Date().toLocaleString()
+        };
+      
+        let registrations = JSON.parse(localStorage.getItem('registrations')) || [];
+        registrations.push(registrationData);
+        localStorage.setItem('registrations', JSON.stringify(registrations));
+      
+        alert("Registration Successful!");
+        this.reset();
+      });
+      
+      
+    </script>
+    </section>
+</body>
+</html>

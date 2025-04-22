@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Upload</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    nav {
+      background: #4facfe;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    nav h1 {
+      color: white;
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li {
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li:hover {
+      color: #e0f7ff;
+    }
+
+    .upload-section {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .upload-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.2);
+      width: 400px;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .upload-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 24px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      background: #f0f0f0;
+      transition: background 0.3s;
+    }
+
+    input:focus {
+      background: #e6f7ff;
+    }
+
+    input[type="file"] {
+      background: #f7f7f7;
+    }
+
+    button {
+      background-color: #4facfe;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #00f2fe;
+      transform: scale(1.03);
+    }
+
+    .progress-bar {
+      background: #ddd;
+      height: 10px;
+      border-radius: 20px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      transition: width 0.4s ease-in-out;
+    }
+
+    @media (max-width: 500px) {
+      .upload-container {
+        width: 90%;
+      }
+      nav h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <h1>EventsTracker</h1>
+    
+  </nav>
+
+  <!-- Upload Form Section -->
+  <div class="upload-section">
+    <div class="upload-container">
+      <h2>Upload Certificates</h2>
+      <input type="text" id="studentName" placeholder="Student Name" required>
+      <input type="text" id="rollNo" placeholder="Roll No" required>
+      <input type="text" id="eventName" placeholder="Event Name" required>
+      <input type="date" id="eventDate" required>
+      <input type="file" id="pdfFile" accept="application/pdf" required>
+      <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <button onclick="submitForm()">Upload File</button>
+    </div>
+  </div>
+
+  <!-- Script Section -->
+  <script>
+    function submitForm() {
+      const name = document.getElementById("studentName").value;
+      const rollNo = document.getElementById("rollNo").value;
+      const event = document.getElementById("eventName").value;
+      const date = document.getElementById("eventDate").value;
+      const fileInput = document.getElementById("pdfFile");
+      const file = fileInput.files[0];
+
+      const progressBar = document.getElementById("progressBar");
+      const progressFill = document.getElementById("progressFill");
+
+      if (!file || file.size > 1024 * 1024 || file.type !== "application/pdf") {
+        alert("Please upload a valid PDF file smaller than 1MB.");
+        return;
+      }
+
+      progressBar.style.display = "block";
+      progressFill.style.width = "0%";
+
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        if (progress >= 100) {
+          clearInterval(progressInterval);
+          const reader = new FileReader();
+          reader.onload = () => {
+            const data = JSON.parse(localStorage.getItem("submissions") || "[]");
+            data.push({
+              name, rollNo, event, date, fileName: file.name,
+              fileData: reader.result, status: "Pending"
+            });
+            localStorage.setItem("submissions", JSON.stringify(data));
+            alert("🎉 File uploaded successfully!");
+            fileInput.value = "";
+            document.querySelectorAll("input[type=text], input[type=date]").forEach(input => input.value = "");
+            progressBar.style.display = "none";
+          };
+          reader.readAsDataURL(file);
+        } else {
+          progress += 10;
+          progressFill.style.width = progress + "%";
+        }
+      }, 80);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - EventsTracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #ffecd2, #fcb69f);
+    }
+
+    nav {
+      background: #f7b733;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    nav h1 {
+      color: white;
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 20px;
+    }
+
+    nav ul li {
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li:hover {
+      color: #fff6e0;
+    }
+
+    .container {
+      padding: 40px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 28px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .search-box {
+      text-align: right;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: #f7b733;
+      color: white;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    td i {
+      cursor: pointer;
+      margin: 0 5px;
+      font-size: 18px;
+      transition: color 0.3s ease;
+    }
+
+    td i:hover {
+      color: #4facfe;
+    }
+
+    @media (max-width: 768px) {
+      table, th, td {
+        font-size: 14px;
+      }
+      nav h1 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <h1>EventsTracker</h1>
+    
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h2>Certificates Obtained by Students</h2>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search by name, roll no, or event..." onkeyup="filterTable()">
+    </div>
+
+    <table id="adminTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Roll No</th>
+          <th>Event</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    const tableBody = document.querySelector("#adminTable tbody");
+
+    function renderTable() {
+      const data = JSON.parse(localStorage.getItem("submissions") || "[]");
+      tableBody.innerHTML = "";
+      data.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.rollNo}</td>
+          <td>${item.event}</td>
+          <td>${item.date}</td>
+          <td>${item.status}</td>
+          <td>
+            <i class="fa fa-eye" title="View" onclick="viewPDF(${index})"></i>
+            <i class="fa fa-check" title="Accept" onclick="updateStatus(${index}, 'Accepted')"></i>
+            <i class="fa fa-trash" title="Delete" onclick="deleteRow(${index})"></i>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function updateStatus(index, status) {
+      const data = JSON.parse(localStorage.getItem("submissions") || "[]");
+      data[index].status = status;
+      localStorage.setItem("submissions", JSON.stringify(data));
+      renderTable();
+    }
+
+    function deleteRow(index) {
+      const data = JSON.parse(localStorage.getItem("submissions") || "[]");
+      if (confirm("Are you sure you want to delete this?")) {
+        data.splice(index, 1);
+        localStorage.setItem("submissions", JSON.stringify(data));
+        renderTable();
+      }
+    }
+
+    function viewPDF(index) {
+      const data = JSON.parse(localStorage.getItem("submissions") || "[]");
+      const pdfData = data[index].fileData;
+
+      const pdfWindow = window.open("");
+      pdfWindow.document.write(`
+        <html>
+          <head><title>View PDF</title></head>
+          <body style="margin:0">
+            <embed src="${pdfData}" width="100%" height="100%" type="application/pdf">
+          </body>
+        </html>
+      `);
+    }
+
+    function filterTable() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const rows = document.querySelectorAll("#adminTable tbody tr");
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        const text = [...cells].slice(0, 3).map(td => td.textContent.toLowerCase()).join(" ");
+        row.style.display = text.includes(input) ? "" : "none";
+      });
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>

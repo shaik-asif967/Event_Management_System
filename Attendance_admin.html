@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Attendance Management</title>
+  <link rel="stylesheet" href="attendance.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">📋 A.M.S</div>
+    <nav><a href="#">Attendance</a></nav>
+  </header>
+
+  <main>
+    <div class="form-section">
+      <input type="text" id="studentName" placeholder="Student Name" />
+      <input type="text" id="eventName" placeholder="Roll Number" />
+      <input type="date" id="attendanceDate" />
+      <button onclick="addRecord()">➕ Add Attendance</button>
+      <input type="text" id="search" placeholder="Search..." onkeyup="searchTable()" />
+      <button onclick="downloadExcel()">⬇️ Export</button>
+    </div>
+
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Student</th>
+          <th>Roll No</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </main>
+
+  <script>
+    let attendanceData = [];
+
+    // Load data on page load
+    window.onload = () => {
+      attendanceData = JSON.parse(localStorage.getItem("attendance")) || [];
+      renderTable(attendanceData);
+    };
+
+    function addRecord() {
+      const student = document.getElementById('studentName').value;
+      const event = document.getElementById('eventName').value;
+      const date = document.getElementById('attendanceDate').value;
+      if (!student || !event || !date) return alert("All fields are required.");
+
+      const newRecord = {
+        student,
+        event,
+        date,
+        status: "-"
+      };
+
+      attendanceData.push(newRecord);
+      localStorage.setItem("attendance", JSON.stringify(attendanceData));
+      renderTable(attendanceData);
+
+      // Clear input fields
+      document.getElementById('studentName').value = '';
+      document.getElementById('eventName').value = '';
+      document.getElementById('attendanceDate').value = '';
+    }
+
+    function renderTable(data) {
+      const tableBody = document.getElementById("tableBody");
+      tableBody.innerHTML = "";
+
+      data.forEach((record, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${record.student}</td>
+          <td>${record.event}</td>
+          <td>${record.date}</td>
+          <td id="status-${index}">${record.status}</td>
+          <td>
+            <button class="present" onclick="markStatus(${index}, 'Present')">P</button>
+            <button class="absent" onclick="markStatus(${index}, 'Absent')">A</button>
+            <button class="delete" onclick="deleteRecord(${index})">🗑️</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function markStatus(index, status) {
+      attendanceData[index].status = status;
+      localStorage.setItem("attendance", JSON.stringify(attendanceData));
+      renderTable(attendanceData);
+    }
+
+    function deleteRecord(index) {
+      if (confirm("Are you sure you want to delete this record?")) {
+        attendanceData.splice(index, 1); // Remove from array
+        localStorage.setItem("attendance", JSON.stringify(attendanceData)); // Update storage
+        renderTable(attendanceData); // Re-render
+      }
+    }
+
+    function searchTable() {
+      const filter = document.getElementById("search").value.toUpperCase();
+      const trs = document.getElementById("attendanceTable").getElementsByTagName("tr");
+      for (let i = 1; i < trs.length; i++) {
+        const td = trs[i].getElementsByTagName("td")[1];
+        if (td) {
+          trs[i].style.display = td.innerText.toUpperCase().includes(filter) ? "" : "none";
+        }
+      }
+    }
+
+    function downloadExcel() {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.table_to_sheet(document.getElementById('attendanceTable'));
+
+      // Auto adjust column widths
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const colWidths = data[0].map((_, colIndex) => {
+        const maxLength = data.reduce((acc, row) => {
+          const cell = row[colIndex];
+          return Math.max(acc, cell ? cell.toString().length : 0);
+        }, 10);
+        return { wch: maxLength };
+      });
+
+      ws['!cols'] = colWidths;
+
+      XLSX.utils.book_append_sheet(wb, ws, "Attendance");
+      XLSX.writeFile(wb, "attendance.xlsx");
+    }
+  </script>
+</body>
+</html>
