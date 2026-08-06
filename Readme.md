@@ -274,13 +274,13 @@ Students can submit
 Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/EventTracker.git
+git clone https://github.com/shaik-asif967/Event_Management_System.git
 ```
 
 Go to the project directory
 
 ```bash
-cd EventTracker
+cd Event_Management_System
 ```
 
 Open the project
