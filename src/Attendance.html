@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Attendance Management</title>
+  <link rel="stylesheet" href="attendance.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">📋 A.M.S</div>
+    <nav>
+      
+      <a href="#">Attendance Section</a>
+    </nav>
+    
+  </header>
+
+  <main>
+    <div class="form-section">
+      <input type="text" id="studentName" placeholder="Student Name" />
+      <input type="text" pattern="[A-Za-z0-9]+" id="eventName" placeholder="Roll Number" />
+      
+      <button onclick="addRecord()">➕ Add Attendance</button>
+      <input type="text" id="search" placeholder="Search..." onkeyup="searchTable()" />
+      <button onclick="downloadExcel()">⬇️ Export</button>
+    </div>
+
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student</th>
+          <th>Roll No</th>
+          <th>Status</th>
+          <th>Mark</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </main>
+
+  <script>
+    let count = 0;
+
+    function addRecord() {
+      const student = document.getElementById('studentName').value;
+      const event = document.getElementById('eventName').value;
+      if (!student || !event) return alert("Both fields required.");
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${++count}</td>
+        <td>${student}</td>
+        <td>${event}</td>
+        <td id="status-${count}">-</td>
+        <td>
+          <button class="present" onclick="markStatus(${count}, 'Present')">P</button>
+          <button class="absent" onclick="markStatus(${count}, 'Absent')">A</button>
+        </td>
+      `;
+      document.getElementById('tableBody').appendChild(row);
+      document.getElementById('studentName').value = '';
+      document.getElementById('eventName').value = '';
+    }
+
+    function markStatus(id, status) {
+      const statusCell = document.getElementById(`status-${id}`);
+      statusCell.textContent = status;
+      statusCell.style.color = status === 'Present' ? 'green' : 'red';
+    }
+
+    function searchTable() {
+      const filter = document.getElementById("search").value.toUpperCase();
+      const trs = document.getElementById("attendanceTable").getElementsByTagName("tr");
+
+      for (let i = 1; i < trs.length; i++) {
+        const td = trs[i].getElementsByTagName("td")[1];
+        if (td) {
+          trs[i].style.display = td.innerText.toUpperCase().includes(filter) ? "" : "none";
+        }
+      }
+    }
+
+    function downloadExcel() {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.table_to_sheet(document.getElementById('attendanceTable'));
+      XLSX.utils.book_append_sheet(wb, ws, "Attendance");
+      XLSX.writeFile(wb, "attendance.xlsx");
+    }
+  </script>
+</body>
+</html>
