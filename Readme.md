@@ -327,7 +327,7 @@ No backend or database is required.
 
 ---
 
-# 👨‍💻 Developer
+# 👨‍💻 Developer"s
 
 ## **Shaik Asif**
 
@@ -336,6 +336,14 @@ No backend or database is required.
 Institute of Aeronautical Engineering (IARE)
 
 Hyderabad, Telangana
+
+## **Shaik Mahammad Sameer**
+
+**B.Tech - Computer Science And Engineering**
+
+Srm Institute of science And technology
+
+Chennai, Tamilnadu
 
 ---
 
